@@ -70,21 +70,23 @@ function UserManagement() {
 
     {
       title: <span>Phone</span>,
-      dataIndex: "phone",
-      key: "phone",
-      render: (phone) => <span>{phone}</span>,
+      dataIndex: "phone_number",
+      key: "phone_number",
+      render: (phone_number) => <span>{phone_number}</span>,
     },
-    {
-      title: <span>Total Saved Money</span>,
-      dataIndex: "total_saved_money",
-      key: "total_saved_money",
-      render: (total_saved_money) => <span>{total_saved_money || 0}</span>,
-    },
+    // {
+    //   title: <span>Total Saved Money</span>,
+    //   dataIndex: "total_saved_money",
+    //   key: "total_saved_money",
+    //   render: (total_saved_money) => <span>{total_saved_money || 0}</span>,
+    // },
     {
       title: <span>Favorite Items</span>,
-      dataIndex: "favorite_items",
-      key: "favorite_items",
-      render: (favorite_items) => <span>{favorite_items || "3 Out of 4"}</span>,
+      dataIndex: "favorite_item",
+      key: "favorite_item",
+      render: (favorite_item) => (
+        <span>{favorite_item || "No Favorite Items"}</span>
+      ),
     },
 
     {
@@ -113,12 +115,12 @@ function UserManagement() {
     <div className="p-4">
       <Table
         columns={columns}
-        dataSource={allUsers.results}
+        dataSource={allUsers}
         rowKey="id"
         pagination={{
           current: filter.page,
           pageSize: filter.limit,
-          total: allUsers.count,
+          total: allUsers.length,
           showSizeChanger: true,
           pageSizeOptions: ["10", "20", "50", "100"],
         }}

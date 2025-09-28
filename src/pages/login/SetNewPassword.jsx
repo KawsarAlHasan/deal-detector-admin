@@ -10,7 +10,8 @@ const SetNewPassword = () => {
 
   const navigate = useNavigate();
 
-  const reset_token = localStorage.getItem("reset_token");
+  const email = localStorage.getItem("email");
+  const code = localStorage.getItem("code");
 
   const onFinish = async (values) => {
     if (values.password !== values.confirmPassword) {
@@ -20,19 +21,22 @@ const SetNewPassword = () => {
 
     setLoading(true); // Start loading when submitting form
     try {
-      const response = await API.post("/user_auth/setpassword/", {
+      const response = await API.post("/api/auth/set_new_password/", {
         new_password: values.password,
-        confirm_password: values.confirmPassword,
-        reset_token: reset_token,
+        new_password2: values.confirmPassword,
+        code: code,
+        email: email,
       });
 
       if (response.status === 200) {
         message.success("Password updated successfully!");
-        localStorage.setItem("token", response.data.access);
-        localStorage.removeItem("reset_token");
+        localStorage.setItem("token", response.data.tokens.access);
+        localStorage.removeItem("code");
+        localStorage.removeItem("email");
         navigate("/");
       }
     } catch (error) {
+
       message.error(
         error?.response?.data?.error ||
           "Password update failed. Please try again."

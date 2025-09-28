@@ -14,16 +14,15 @@ const CheckCode = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const response = await API.post("/user_auth/verify-passwordreset-otp/", {
+      const response = await API.post("/api/auth/verify_code/", {
         email: email,
-        otp: values.otp,
+        code: values.otp,
       });
 
       if (response.status === 200) {
         message.success("OTP verified successfully!");
 
-        localStorage.setItem("reset_token", response.data.reset_token);
-        localStorage.removeItem("email");
+        localStorage.setItem("code", values.otp);
 
         navigate("/set-new-password");
       }
@@ -39,7 +38,7 @@ const CheckCode = () => {
   const handleResend = async () => {
     setResendLoading(true);
     try {
-      const response = await API.post("/user_auth/send-passwordreset-otp/", {
+      const response = await API.post("/api/auth/forgot-password/", {
         email: email,
       });
 

@@ -19,7 +19,7 @@ const AccountSetting = ({ adminProfile, refetch }) => {
       formData.append("name", values.name);
       formData.append("phone_number", values.phone_number);
 
-      const res = await API.patch(`/admin-dashboard/admin-profile/`, formData);
+      const res = await API.patch(`/api/auth/profile/update/`, formData);
 
       if (res.status === 200) {
         message.success("Profile updated successfully!");
@@ -52,10 +52,9 @@ const AccountSetting = ({ adminProfile, refetch }) => {
           layout="vertical"
           onFinish={handleFinish}
           initialValues={{
-            name: adminProfile?.name,
+            name: adminProfile?.full_name,
             email: adminProfile?.email,
             phone_number: adminProfile?.phone_number,
-            role: adminProfile?.role,
           }}
         >
           <Form.Item
@@ -85,10 +84,6 @@ const AccountSetting = ({ adminProfile, refetch }) => {
             ]}
           >
             <Input />
-          </Form.Item>
-
-          <Form.Item label="Role" name="role">
-            <Input disabled />
           </Form.Item>
 
           <Form.Item>

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export const API = axios.create({
-  baseURL: "https://meal.dsrt321.online/api/",
+  baseURL: "https://deal.dsrt321.online",
 });
 
 API.interceptors.request.use((config) => {
@@ -16,7 +16,7 @@ API.interceptors.request.use((config) => {
 // get admin dashboard
 export const useAdminDashboard = () => {
   const getData = async () => {
-    const response = await API.get("/admin-dashboard/admin-profile/");
+    const response = await API.get("/api/auth/user/");
     return response.data;
   };
 
@@ -43,7 +43,7 @@ export const signOutAdmin = () => {
 // get admin dashboard
 export const useDashboardOverview = () => {
   const getData = async () => {
-    const response = await API.get("/admin-dashboard/dashboard-overview/");
+    const response = await API.get("/api/shop/dashboard/");
     return response.data;
   };
 
@@ -65,7 +65,7 @@ export const useDashboardOverview = () => {
 export const useAllUser = ({ page = 1, limit = 10 }) => {
   const getData = async () => {
     const response = await API.get(
-      `/admin-dashboard/user-list/?page=${page}&limit=${limit}`
+      `/api/auth/user/list/?page=${page}&limit=${limit}`
     );
 
     return response.data;
@@ -84,6 +84,115 @@ export const useAllUser = ({ page = 1, limit = 10 }) => {
 
   return { allUsers, isLoading, isError, error, refetch };
 };
+
+// categories list
+export const useAllCategories = ({ page = 1, limit = 10 }) => {
+  const getData = async () => {
+    const response = await API.get(
+      `/api/shop/categories/?page=${page}&limit=${limit}`
+    );
+
+    return response.data;
+  };
+
+  const {
+    data: allCategories = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["allCategories", page, limit],
+    queryFn: getData,
+  });
+
+  return { allCategories, isLoading, isError, error, refetch };
+};
+
+// promo codes list
+export const useAllPromoCodes = ({ page = 1, limit = 10 }) => {
+  const getData = async () => {
+    const response = await API.get(
+      `/api/auth/promo-code/?page=${page}&limit=${limit}`
+    );
+
+    return response.data;
+  };
+
+  const {
+    data: allPromoCodes = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["allPromoCodes", page, limit],
+    queryFn: getData,
+  });
+
+  return { allPromoCodes, isLoading, isError, error, refetch };
+};
+
+// promo codes list
+export const useAllProducts = ({ page = 1, limit = 10 }) => {
+  const getData = async () => {
+    const response = await API.get(
+      `/api/shop/products/list/?page=${page}&limit=${limit}`
+    );
+
+    return response.data;
+  };
+
+  const {
+    data: allProducts = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["allProducts", page, limit],
+    queryFn: getData,
+  });
+
+  return { allProducts, isLoading, isError, error, refetch };
+};
+
+// promo codes list
+export const useAllSupershops = ({ page = 1, limit = 10 }) => {
+  const getData = async () => {
+    const response = await API.get(
+      `/api/shop/supershops/?page=${page}&limit=${limit}`
+    );
+
+    return response.data;
+  };
+
+  const {
+    data: allSupershops = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["allSupershops", page, limit],
+    queryFn: getData,
+  });
+
+  return { allSupershops, isLoading, isError, error, refetch };
+};
+
+// not used
+// not used
+// not used
+// not used
+// not used
+// not used
+// not used
+// not used
+// not used
+// not used
+// not used
+// not used
 
 // Admin list
 export const useAdminList = ({ page = 1, limit = 10 }) => {

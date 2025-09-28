@@ -7,8 +7,13 @@ import AccountSetting from "./AccountSetting";
 import { signOutAdmin, useAdminDashboard } from "../api/api";
 
 const Navbar = ({ showDrawer }) => {
-    const { adminDashboard: adminProfile, isLoading, isError, error, refetch } =
-      useAdminDashboard();
+  const {
+    adminDashboard: adminProfile,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useAdminDashboard();
 
   const navigate = useNavigate();
 
@@ -16,8 +21,6 @@ const Navbar = ({ showDrawer }) => {
     signOutAdmin();
     navigate("/login");
   };
-
-
 
   const profileMenuItems = [
     {
@@ -32,10 +35,10 @@ const Navbar = ({ showDrawer }) => {
             />
             <div>
               <h1 className="text-[#242424] text-[16px] font-bold mb-1">
-                {adminProfile?.name}
+                {adminProfile?.full_name}
               </h1>
               <Tag color="blue" className="m-0">
-                {adminProfile?.role}
+                {adminProfile?.email}
               </Tag>
             </div>
           </div>
@@ -47,7 +50,7 @@ const Navbar = ({ showDrawer }) => {
     },
     {
       key: "profile",
-      label: <AccountSetting adminProfile={adminProfile} />,
+      label: <AccountSetting adminProfile={adminProfile} refetch={refetch} />,
     },
     {
       key: "change-password",
@@ -104,10 +107,10 @@ const Navbar = ({ showDrawer }) => {
                 />
                 <div className="hidden md:block ">
                   <div className="text-[#242424] text-[14px] font-semibold leading-tight">
-                    {adminProfile?.name}
+                    {adminProfile?.full_name}
                   </div>
                   <div className="text-[12px] text-gray-500 leading-tight">
-                    {adminProfile?.role}
+                    {adminProfile?.email}
                   </div>
                 </div>
                 <div className="hidden md:block">

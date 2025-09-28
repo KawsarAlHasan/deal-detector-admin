@@ -21,9 +21,8 @@ function ViewUser({ userDetailsData, isOpen, onClose, refetch }) {
   const handleUserEnable = async (userData) => {
     setEnableLoading(true);
     try {
-      const response = await API.patch(`/admin-dashboard/user-block-unblock/`, {
-        user_id: userData.id,
-        block: false,
+      const response = await API.patch(`/api/user/profile/${userData.id}/`, {
+        is_active: true,
       });
 
       if (response.status === 200) {
@@ -43,9 +42,8 @@ function ViewUser({ userDetailsData, isOpen, onClose, refetch }) {
   const handleUserDisable = async (userData) => {
     setDisableLoading(true);
     try {
-      const response = await API.patch(`/admin-dashboard/user-block-unblock/`, {
-        user_id: userData.id,
-        block: true,
+      const response = await API.patch(`/api/user/profile/${userData.id}/`, {
+        is_active: false,
       });
 
       if (response.status === 200) {
@@ -63,27 +61,27 @@ function ViewUser({ userDetailsData, isOpen, onClose, refetch }) {
     }
   };
 
-  const handleUserDelete = async (userData) => {
-    setDeleteLoading(true);
-    try {
-      const response = await API.post(`/admin-dashboard/delete-user/`, {
-        user_id: userData.id,
-      });
+  // const handleUserDelete = async (userData) => {
+  //   setDeleteLoading(true);
+  //   try {
+  //     const response = await API.post(`/admin-dashboard/delete-user/`, {
+  //       user_id: userData.id,
+  //     });
 
-      if (response.status === 200) {
-        openNotification("success", "Success", "User deleted successfully");
-        refetch();
-        onClose();
-      }
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.error || "Failed to delete user";
+  //     if (response.status === 200) {
+  //       openNotification("success", "Success", "User deleted successfully");
+  //       refetch();
+  //       onClose();
+  //     }
+  //   } catch (error) {
+  //     const errorMessage =
+  //       error.response?.data?.error || "Failed to delete user";
 
-      openNotification("error", "Error", errorMessage);
-    } finally {
-      setDeleteLoading(false);
-    }
-  };
+  //     openNotification("error", "Error", errorMessage);
+  //   } finally {
+  //     setDeleteLoading(false);
+  //   }
+  // };
 
   return (
     <Modal
@@ -105,7 +103,7 @@ function ViewUser({ userDetailsData, isOpen, onClose, refetch }) {
           </p>
           <p>
             <Text strong>Phone Number: </Text>
-            {userDetailsData.phone}
+            {userDetailsData.phone_number}
           </p>
           <p>
             <Text strong>Total Saved Money: </Text>
@@ -113,7 +111,7 @@ function ViewUser({ userDetailsData, isOpen, onClose, refetch }) {
           </p>
           <p>
             <Text strong>Favorite Items: </Text>
-            {userDetailsData?.favorite_items || 0}
+            {userDetailsData?.favorite_item || 0}
           </p>
           <p>
             <Text strong>Status: </Text>
@@ -143,14 +141,14 @@ function ViewUser({ userDetailsData, isOpen, onClose, refetch }) {
               </Button>
             )}
 
-            <Button
+            {/* <Button
               danger
               type="primary"
               loading={deleteLoading}
               onClick={() => handleUserDelete(userDetailsData)}
             >
               Delete User
-            </Button>
+            </Button> */}
           </Space>
         </>
       ) : (

@@ -3,12 +3,10 @@ import { AppstoreOutlined, LogoutOutlined } from "@ant-design/icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUsers } from "react-icons/fa";
 import { FaBuildingFlag } from "react-icons/fa6";
-import { signOutAdmin, useAdminDashboard } from "../api/api";
+import { signOutAdmin } from "../api/api";
 
 const Sidebar = ({ onClick }) => {
   const location = useLocation();
-
-  const { adminDashboard } = useAdminDashboard();
 
   const navigate = useNavigate();
   const handleSignOut = () => {
@@ -21,11 +19,12 @@ const Sidebar = ({ onClick }) => {
     const path = location.pathname;
     if (path === "/") return ["1"];
     if (path === "/user-management") return ["user-management"];
-    if (path === "/administrators") return ["3"];
+    if (path === "/products") return ["products"];
+    if (path === "/categories") return ["categories"];
+    if (path === "/super-shop") return ["super-shop"];
+    if (path === "/promo-codes") return ["promo-codes"];
     return ["1"];
   };
-
-  const isSuperAdmin = adminDashboard?.role === "superadmin";
 
   const sidebarItems = [
     {
@@ -39,16 +38,26 @@ const Sidebar = ({ onClick }) => {
       icon: <FaUsers />,
       label: <Link to="/user-management">User Management</Link>,
     },
-
-    ...(isSuperAdmin
-      ? [
-          {
-            key: "3",
-            icon: <FaBuildingFlag />,
-            label: <Link to="/administrators">Administrators</Link>,
-          },
-        ]
-      : []),
+    {
+      key: "products",
+      icon: <FaBuildingFlag />,
+      label: <Link to="/products">Products</Link>,
+    },
+    {
+      key: "categories",
+      icon: <FaBuildingFlag />,
+      label: <Link to="/categories">Categories</Link>,
+    },
+    {
+      key: "super-shop",
+      icon: <FaBuildingFlag />,
+      label: <Link to="/super-shop">Super Shop</Link>,
+    },
+    {
+      key: "promo-codes",
+      icon: <FaBuildingFlag />,
+      label: <Link to="/promo-codes">Promo Codes</Link>,
+    },
 
     // Add logout as a menu item at the bottom
     {

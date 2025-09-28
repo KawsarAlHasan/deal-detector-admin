@@ -18,15 +18,9 @@ const Login = () => {
   const onFinish = async (values) => {
     setLoading(true); // Start loading when submitting form
     try {
-      const payload = {
-        email_or_username: values.email,
-        password: values.password,
-        remember_me: values.remember,
-      };
+      const response = await API.post("/api/auth/login/", values);
 
-      const response = await API.post("/user_auth/login/", payload);
-
-      // // If successful, save the token in localStorage
+      // If successful, save the token in localStorage
       localStorage.setItem("token", response.data.access);
 
       // Show success message

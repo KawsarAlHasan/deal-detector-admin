@@ -13,7 +13,7 @@ const ChangePassword = () => {
   const handleFinish = async (values) => {
     try {
       setLoading(true);
-      const res = await API.patch("/admin-dashboard/password-reset/", {
+      const res = await API.post("/api/auth/change-password/", {
         old_password: values.old_password,
         new_password: values.new_password,
         confirm_password: values.retype_new_password,
@@ -24,13 +24,7 @@ const ChangePassword = () => {
         setIsModalOpen(false);
       }
     } catch (error) {
-      message.error(
-        error?.response?.data?.old_password
-          ? error?.response?.data?.old_password[0]
-          : error?.response?.data?.new_password
-          ? error?.response?.data?.new_password[0]
-          : "Password change failed. Please try again."
-      );
+      message.error("Password change failed. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -11,7 +11,7 @@ const ForgotPassword = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const response = await API.post("/user_auth/send-passwordreset-otp/", {
+      const response = await API.post("/api/auth/forgot-password/", {
         email: values.email,
       });
       if (response.status === 200) {
