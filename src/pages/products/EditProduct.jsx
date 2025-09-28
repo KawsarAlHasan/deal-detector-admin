@@ -137,9 +137,8 @@ function EditProduct({ record, refetch }) {
       formData.append("category", values.category);
       formData.append("uom", values.uom);
 
-      // // Add prices
-      // const validPrices = prices.filter((price) => price.shop && price.price);
-      // console.log(validPrices, "Valid Prices to be sent");
+      // Add prices
+      const validPrices = prices.filter((price) => price.shop && price.price);
 
       // formData.append("prices", JSON.stringify(validPrices));
 
@@ -462,7 +461,7 @@ function EditProduct({ record, refetch }) {
           </Card>
 
           {/* Pricing Section */}
-          {/* <Card
+          <Card
             title="💰 Pricing"
             size="small"
             style={{ marginBottom: 16 }}
@@ -550,7 +549,7 @@ function EditProduct({ record, refetch }) {
                 </div>
               </div>
             )}
-          </Card> */}
+          </Card>
 
           <Divider />
 
