@@ -6,6 +6,7 @@ import IsLoading from "../../components/IsLoading";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { API, useAllProducts } from "../../api/api";
 import CreateProduct from "./CreateProduct";
+import EditProduct from "./EditProduct";
 
 function Products() {
   const [filter, setFilter] = useState({
@@ -124,7 +125,7 @@ function Products() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <EditOutlined className="text-xl text-blue-500 hover:text-blue-700 cursor-pointer transition-colors" />
+          <EditProduct record={record} refetch={refetch} />
           <DeleteOutlined
             className="text-xl text-red-500 hover:text-red-700 cursor-pointer transition-colors"
             onClick={() => openDeleteModal(record)}

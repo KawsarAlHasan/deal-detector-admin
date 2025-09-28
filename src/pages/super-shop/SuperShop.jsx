@@ -6,6 +6,7 @@ import IsLoading from "../../components/IsLoading";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { API, useAllSupershops } from "../../api/api";
 import AddSuperShop from "./AddSuperShop";
+import EditShop from "./EditShop";
 
 function SuperShop() {
   const [filter, setFilter] = useState({
@@ -114,7 +115,7 @@ function SuperShop() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-           <EditOutlined className="text-xl text-blue-500 hover:text-blue-700 cursor-pointer transition-colors" />
+          <EditShop record={record} refetch={refetch} />
           <DeleteOutlined
             className="text-xl text-red-500 hover:text-red-700 cursor-pointer transition-colors"
             onClick={() => openDeleteModal(record)}

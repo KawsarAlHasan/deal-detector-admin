@@ -6,6 +6,7 @@ import IsLoading from "../../components/IsLoading";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { API, useAllCategories } from "../../api/api";
 import CreateCategory from "./CreateCategory";
+import EditCategory from "./EditCategory";
 
 function Categories() {
   const [filter, setFilter] = useState({
@@ -114,7 +115,7 @@ function Categories() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-           <EditOutlined className="text-xl text-blue-500 hover:text-blue-700 cursor-pointer transition-colors" />
+          <EditCategory record={record} refetch={refetch} />
           <DeleteOutlined
             className="text-xl text-red-500 hover:text-red-700 cursor-pointer transition-colors"
             onClick={() => openDeleteModal(record)}

@@ -1,36 +1,35 @@
 import React, { useState } from "react";
 import {
+  EditOutlined,
+  UploadOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  ShoppingOutlined,
+} from "@ant-design/icons";
+import {
+  Modal,
   Form,
   Input,
   InputNumber,
   Button,
-  Modal,
   Upload,
   Select,
   Card,
   Row,
   Col,
-  Tabs,
   message,
   Tag,
   Divider,
 } from "antd";
-import {
-  PlusOutlined,
-  UploadOutlined,
-  DeleteOutlined,
-  ShoppingOutlined,
-} from "@ant-design/icons";
 import { useAllCategories, useAllSupershops } from "../../api/api";
 import { API } from "../../api/api";
 
 const { TextArea } = Input;
 const { Option } = Select;
-const { TabPane } = Tabs;
 
-function CreateProduct({refetch}) {
-  const [form] = Form.useForm();
+function EditProduct({ record, refetch }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [imageFiles, setImageFiles] = useState({
     image1: null,
@@ -44,6 +43,19 @@ function CreateProduct({refetch}) {
 
   const showModal = () => {
     setIsModalOpen(true);
+
+    // Set form values directly from record
+    form.setFieldsValue({
+      category: record.category?.id || record.category, // Category ID
+      uom: record.uom,
+      name_en: record.translations?.en?.product_name || "",
+      description_en: record.translations?.en?.description || "",
+      name_nl: record.translations?.nl?.product_name || "",
+      description_nl: record.translations?.nl?.description || "",
+    });
+
+    // Set prices from record
+    setPrices(record.prices || []);
   };
 
   const handleCancel = () => {
@@ -120,39 +132,44 @@ function CreateProduct({refetch}) {
       if (imageFiles.image3)
         formData.append("product_image3", imageFiles.image3);
 
-      // Add other fields
+      // Add other fields - category ID
       formData.append("translations", JSON.stringify(translations));
       formData.append("category", values.category);
       formData.append("uom", values.uom);
 
-      // Add prices
-      const validPrices = prices.filter((price) => price.shop && price.price);
+      // // Add prices
+      // const validPrices = prices.filter((price) => price.shop && price.price);
+      // console.log(validPrices, "Valid Prices to be sent");
 
-      formData.append("prices", JSON.stringify(validPrices));
+      // formData.append("prices", JSON.stringify(validPrices));
 
-      await API.post("/api/shop/products/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await API.patch(
+        `/api/shop/products/update-delete/${record.id}/`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      message.success("Product created successfully!");
-      refetch();
+      message.success("Product updated successfully!");
       handleCancel();
+
+      // Refetch products list
+      if (refetch) {
+        refetch();
+      }
     } catch (error) {
-      message.error("Failed to create product. Please try again.");
+      console.error("Error updating product:", error);
+      message.error("Failed to update product. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const ImageUploader = ({ imageKey, label, required = false }) => (
-    <Form.Item
-      label={label}
-      rules={
-        required ? [{ required: true, message: `${label} is required` }] : []
-      }
-    >
+  const ImageUploader = ({ imageKey, label, currentImage }) => (
+    <Form.Item label={label}>
       <Upload
         listType="picture-card"
         showUploadList={false}
@@ -198,6 +215,34 @@ function CreateProduct({refetch}) {
               ×
             </Button>
           </div>
+        ) : currentImage ? (
+          <div style={{ position: "relative", width: "100%", height: "100%" }}>
+            <img
+              src={currentImage}
+              alt="Product"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "6px",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: "rgba(0,0,0,0.6)",
+                color: "white",
+                padding: "2px",
+                fontSize: "10px",
+                textAlign: "center",
+              }}
+            >
+              Current
+            </div>
+          </div>
         ) : (
           <div style={{ textAlign: "center" }}>
             <UploadOutlined style={{ fontSize: "16px", color: "#1890ff" }} />
@@ -208,17 +253,30 @@ function CreateProduct({refetch}) {
     </Form.Item>
   );
 
+  // Get current category name for display
+  const getCurrentCategoryName = () => {
+    if (record.category?.translations?.en?.category_name) {
+      return record.category.translations.en.category_name;
+    }
+
+    // If category is just an ID, find the name from allCategories
+    if (allCategories && typeof record.category === "number") {
+      const category = allCategories.find((cat) => cat.id === record.category);
+      return (
+        category?.translations?.en?.category_name ||
+        `Category ${record.category}`
+      );
+    }
+
+    return "Unknown Category";
+  };
+
   return (
     <div>
-      <Button
+      <EditOutlined
         onClick={showModal}
-        type="primary"
-        icon={<PlusOutlined />}
-        size="large"
-        className="my-main-button"
-      >
-        Create New Product
-      </Button>
+        className="text-xl text-blue-500 hover:text-blue-700 cursor-pointer transition-colors"
+      />
 
       <Modal
         title={
@@ -231,8 +289,8 @@ function CreateProduct({refetch}) {
               fontWeight: "600",
             }}
           >
-            <ShoppingOutlined style={{ color: "#1890ff" }} />
-            <span>Create New Product</span>
+            <EditOutlined style={{ color: "#1890ff" }} />
+            <span>Edit Product</span>
           </div>
         }
         open={isModalOpen}
@@ -243,6 +301,23 @@ function CreateProduct({refetch}) {
         destroyOnClose
         maskClosable={false}
       >
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "12px",
+            background: "#f0f8ff",
+            borderRadius: "6px",
+          }}
+        >
+          <div style={{ fontSize: "14px", color: "#1890ff" }}>
+            <strong>Editing Product ID: {record.id}</strong>
+            <div style={{ marginTop: "4px" }}>
+              Current Category:{" "}
+              <Tag color="blue">{getCurrentCategoryName()}</Tag>
+            </div>
+          </div>
+        </div>
+
         <Form
           form={form}
           layout="vertical"
@@ -254,19 +329,34 @@ function CreateProduct({refetch}) {
             title="📷 Product Images"
             size="small"
             style={{ marginBottom: 16 }}
-            extra={<Tag color="blue">At least 1 image required</Tag>}
           >
             <Row gutter={16}>
               <Col span={8}>
-                <ImageUploader imageKey="image1" label="Main Image" required />
+                <ImageUploader
+                  imageKey="image1"
+                  label="Main Image"
+                  currentImage={record.product_image1}
+                />
               </Col>
               <Col span={8}>
-                <ImageUploader imageKey="image2" label="Additional Image 1" />
+                <ImageUploader
+                  imageKey="image2"
+                  label="Additional Image 1"
+                  currentImage={record.product_image2}
+                />
               </Col>
               <Col span={8}>
-                <ImageUploader imageKey="image3" label="Additional Image 2" />
+                <ImageUploader
+                  imageKey="image3"
+                  label="Additional Image 2"
+                  currentImage={record.product_image3}
+                />
               </Col>
             </Row>
+            <div style={{ color: "#666", fontSize: "12px", marginTop: "8px" }}>
+              <div>• Upload new images to replace current ones</div>
+              <div>• Keep empty to maintain current images</div>
+            </div>
           </Card>
 
           {/* Basic Information */}
@@ -285,10 +375,10 @@ function CreateProduct({refetch}) {
                   ]}
                 >
                   <Select placeholder="Select category" size="large">
-                    {allCategories?.map((shop) => (
-                      <Option key={shop.id} value={shop.id}>
-                        {shop.translations?.en?.category_name ||
-                          `Category ${shop.id}`}
+                    {allCategories?.map((category) => (
+                      <Option key={category.id} value={category.id}>
+                        {category.translations?.en?.category_name ||
+                          `Category ${category.id}`}
                       </Option>
                     ))}
                   </Select>
@@ -298,12 +388,9 @@ function CreateProduct({refetch}) {
                 <Form.Item
                   label="Unit of Measure (UOM)"
                   name="uom"
-                  rules={[{ required: true, message: "Please select UOM" }]}
+                  rules={[{ required: true, message: "Please enter UOM" }]}
                 >
-                  <Input
-                    placeholder="e.g., piece, kg, liter"
-                    size="large"
-                  />
+                  <Input placeholder="e.g., piece, kg, liter" size="large" />
                 </Form.Item>
               </Col>
             </Row>
@@ -345,7 +432,6 @@ function CreateProduct({refetch}) {
             </Form.Item>
 
             <Divider orientation="left">Dutch</Divider>
-
             <Form.Item
               label="Product Name (Dutch)"
               name="name_nl"
@@ -376,7 +462,7 @@ function CreateProduct({refetch}) {
           </Card>
 
           {/* Pricing Section */}
-          <Card
+          {/* <Card
             title="💰 Pricing"
             size="small"
             style={{ marginBottom: 16 }}
@@ -398,10 +484,7 @@ function CreateProduct({refetch}) {
                 <ShoppingOutlined
                   style={{ fontSize: "24px", marginBottom: "8px" }}
                 />
-                <div>
-                  No prices added yet. Click "Add Price" to set prices for
-                  different shops.
-                </div>
+                <div>No prices configured for this product.</div>
               </div>
             ) : (
               prices.map((price, index) => (
@@ -467,14 +550,18 @@ function CreateProduct({refetch}) {
                 </div>
               </div>
             )}
-          </Card>
+          </Card> */}
 
           <Divider />
 
           {/* Form Actions */}
           <Form.Item style={{ marginBottom: 0 }}>
             <div className="grid grid-cols-2 gap-2">
-              <Button onClick={handleCancel} size="large">
+              <Button
+                onClick={handleCancel}
+                size="large"
+                style={{ minWidth: "100px" }}
+              >
                 Cancel
               </Button>
               <Button
@@ -482,10 +569,11 @@ function CreateProduct({refetch}) {
                 htmlType="submit"
                 loading={loading}
                 size="large"
-                icon={<PlusOutlined />}
+                icon={<EditOutlined />}
                 className="my-main-button"
+                style={{ minWidth: "130px" }}
               >
-                Create Product
+                Update Product
               </Button>
             </div>
           </Form.Item>
@@ -495,4 +583,4 @@ function CreateProduct({refetch}) {
   );
 }
 
-export default CreateProduct;
+export default EditProduct;

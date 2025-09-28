@@ -6,6 +6,7 @@ import IsLoading from "../../components/IsLoading";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { API, useAllCategories, useAllPromoCodes } from "../../api/api";
 import AddPromoCode from "./AddPromoCode";
+import EditPromoCode from "./EditPromoCode";
 
 function PromoCodes() {
   const [filter, setFilter] = useState({
@@ -90,7 +91,9 @@ function PromoCodes() {
       title: <span>Create Date</span>,
       dataIndex: "created_at",
       key: "created_at",
-      render: (created_at, record) => <div className="">{new Date(created_at).toLocaleDateString()}</div>,
+      render: (created_at, record) => (
+        <div className="">{new Date(created_at).toLocaleDateString()}</div>
+      ),
     },
 
     {
@@ -117,7 +120,7 @@ function PromoCodes() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-           <EditOutlined className="text-xl text-blue-500 hover:text-blue-700 cursor-pointer transition-colors" />
+          <EditPromoCode record={record} refetch={refetch} />
           <DeleteOutlined
             className="text-xl text-red-500 hover:text-red-700 cursor-pointer transition-colors"
             onClick={() => openDeleteModal(record)}
